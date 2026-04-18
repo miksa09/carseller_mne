@@ -478,9 +478,20 @@
 <script>
 let currentUser = null;
 let addedPhotos = [];
-let users = [];
-let cars = [];
-// Empty - no demo cars. Users add their own.
+let users = JSON.parse(localStorage.getItem('cs_users') || '[]');
+let cars = JSON.parse(localStorage.getItem('cs_cars') || '[]');
+
+function saveData() {
+  localStorage.setItem('cs_users', JSON.stringify(users));
+  localStorage.setItem('cs_cars', JSON.stringify(cars));
+}
+
+// Auto-login if user was previously logged in
+const savedEmail = localStorage.getItem('cs_loggedIn');
+if (savedEmail) {
+  const u = users.find(x => x.email === savedEmail);
+  if (u) { currentUser = u; }
+}
 
 function toast(msg, type) {
   const t = document.getElementById('toast');
@@ -503,6 +514,7 @@ function toggleSold(id, e) {
   const c = cars.find(x => x.id === id);
   if (!c || !isOwner(c)) return;
   c.sold = !c.sold;
+  saveData();
   toast(c.sold ? 'Oglas označen kao PRODATO.' : 'Oglas ponovo aktivan.', 'success');
   const activePage = document.querySelector('.page.active');
   if (activePage && activePage.id === 'page-listings') filterCars();
@@ -640,6 +652,7 @@ function toggleSoldDetail(id) {
   const c = cars.find(x => x.id === id);
   if (!c || !isOwner(c)) return;
   c.sold = !c.sold;
+  saveData();
   toast(c.sold ? 'Oglas označen kao PRODATO.' : 'Oglas ponovo aktivan.', 'success');
   showDetail(id);
 }
@@ -672,6 +685,7 @@ function setLoggedIn() {
 
 function logout() {
   currentUser = null;
+  localStorage.removeItem('cs_loggedIn');
   document.getElementById('navAuthArea').innerHTML = '<button class="btn-nav-login" onclick="openModal(\'login\')">Prijavi se</button>';
   document.getElementById('profileBar').style.display = 'none';
   document.getElementById('addCarNav').style.display = 'none';
@@ -690,6 +704,7 @@ function doLogin() {
   const u = users.find(x=>x.email===email&&x.pass===pass);
   if (!u) { msg.textContent='Pogrešan email ili lozinka.'; msg.className='modal-msg error'; return; }
   currentUser = u; setLoggedIn(); closeModal();
+  localStorage.setItem('cs_loggedIn', u.email);
   toast('Dobrodošli, '+u.name.split(' ')[0]+'!', 'success');
 }
 
@@ -704,6 +719,8 @@ function doRegister() {
   if (users.find(x=>x.email===email)) { msg.textContent='Email je već registrovan.'; msg.className='modal-msg error'; return; }
   const u = {email, pass, name, phone: phone||'/', isAdmin:false};
   users.push(u); currentUser = u; setLoggedIn(); closeModal();
+  saveData();
+  localStorage.setItem('cs_loggedIn', u.email);
   toast('Nalog kreiran! Dobrodošli, '+name.split(' ')[0]+'!', 'success');
 }
 
@@ -752,6 +769,7 @@ function submitCar() {
     sold: false
   });
   toast('Oglas uspješno objavljen!', 'success');
+  saveData();
   ['addModel','addGodina','addCijena','addKm','addKs','addBoja','addReg','addGrad','addTablice','addOpis','addOprema'].forEach(id=>{ document.getElementById(id).value=''; });
   document.getElementById('photoPreview').innerHTML='';
   addedPhotos=[];
@@ -759,7 +777,8 @@ function submitCar() {
 }
 
 // Init
-renderGrid([], 'featuredGrid');
+if (currentUser) setLoggedIn();
+renderGrid(cars.slice(0,6), 'featuredGrid');
 updateHeroCount();
 </script>
 </body>
