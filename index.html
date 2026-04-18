@@ -40,17 +40,14 @@
       top: 0;
       z-index: 1000;
     }
-    .logo {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 28px;
-      font-weight: 800;
-      letter-spacing: 1px;
-      color: #fff;
+    .nav-logo-img {
+      height: 52px;
+      width: auto;
       cursor: pointer;
-      user-select: none;
+      filter: drop-shadow(0 0 8px rgba(192,57,43,0.3));
+      transition: filter 0.2s;
     }
-    .logo .r { color: var(--red); }
-    .logo .s { color: #555; font-size: 16px; font-weight: 400; }
+    .nav-logo-img:hover { filter: drop-shadow(0 0 12px rgba(192,57,43,0.6)); }
     .nav-links { display: flex; gap: 1.5rem; align-items: center; }
     .nav-links a {
       color: #aaa; text-decoration: none; font-size: 14px; font-weight: 500;
@@ -128,22 +125,48 @@
     .car-card {
       background: var(--mid); border-radius: 5px; overflow: hidden;
       border: 1px solid var(--border); transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s; cursor: pointer;
+      position: relative;
     }
     .car-card:hover { transform: translateY(-4px); border-color: var(--red); box-shadow: 0 8px 30px rgba(192,57,43,0.15); }
+    .car-card.sold-card { opacity: 0.65; }
     .car-img-wrap { position: relative; }
     .car-img-wrap img { width: 100%; height: 200px; object-fit: cover; display: block; }
-    .car-placeholder { width: 100%; height: 200px; background: #111; display: flex; align-items: center; justify-content: center; }
+    .car-placeholder { width: 100%; height: 200px; background: #111; display: flex; align-items: center; justify-content: center; position: relative; }
+    .watermark {
+      position: absolute; bottom: 6px; right: 8px;
+      font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700;
+      color: rgba(255,255,255,0.18); letter-spacing: 1px; pointer-events: none;
+      text-transform: uppercase; user-select: none;
+    }
     .car-gorivo-badge { position: absolute; top: 10px; left: 10px; background: var(--red); color: #fff; font-size: 10px; font-weight: 700; padding: 3px 9px; letter-spacing: 1px; border-radius: 2px; }
+    .sold-overlay {
+      position: absolute; inset: 0; background: rgba(0,0,0,0.55);
+      display: flex; align-items: center; justify-content: center; z-index: 2;
+    }
+    .sold-stamp {
+      border: 3px solid #e74c3c; color: #e74c3c; font-family: 'Barlow Condensed', sans-serif;
+      font-size: 36px; font-weight: 800; letter-spacing: 4px; padding: 6px 18px;
+      transform: rotate(-15deg); opacity: 0.9; text-transform: uppercase;
+    }
     .car-body { padding: 1rem 1.25rem 1.25rem; }
     .car-make { font-size: 11px; color: var(--red); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 2px; }
     .car-name { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 700; color: #fff; margin-bottom: 0.75rem; line-height: 1.1; }
     .car-specs { display: flex; gap: 6px; margin-bottom: 1rem; flex-wrap: wrap; }
     .spec-pill { background: #111; border: 1px solid #3a3a3a; color: #aaa; font-size: 11px; padding: 3px 8px; border-radius: 2px; }
     .car-price { font-family: 'Barlow Condensed', sans-serif; font-size: 28px; font-weight: 800; color: var(--red); }
+    .car-price.sold-price { color: #666; text-decoration: line-through; }
     .car-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
     .car-location { font-size: 12px; color: #666; }
     .btn-details { background: transparent; border: 1px solid var(--red); color: var(--red); padding: 5px 14px; border-radius: 2px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Barlow', sans-serif; transition: all 0.2s; }
     .btn-details:hover { background: var(--red); color: #fff; }
+    .btn-sold-toggle {
+      background: transparent; border: 1px solid #666; color: #888; padding: 5px 10px;
+      border-radius: 2px; font-size: 11px; font-weight: 600; cursor: pointer;
+      font-family: 'Barlow', sans-serif; transition: all 0.2s; margin-left: 4px;
+    }
+    .btn-sold-toggle:hover { border-color: #e74c3c; color: #e74c3c; }
+    .btn-sold-toggle.is-sold { border-color: #27ae60; color: #27ae60; }
+    .btn-sold-toggle.is-sold:hover { border-color: #e74c3c; color: #e74c3c; }
     .filters-bar {
       background: var(--mid); padding: 1.25rem 2rem; display: flex; gap: 0.75rem;
       flex-wrap: wrap; align-items: center; border-bottom: 1px solid var(--border);
@@ -160,8 +183,9 @@
     .back-btn { display: inline-flex; align-items: center; gap: 6px; color: var(--red); font-size: 14px; font-weight: 600; cursor: pointer; padding: 1.5rem 2rem 0; }
     .back-btn:hover { opacity: 0.7; }
     .detail-layout { padding: 1.5rem 2rem 4rem; display: grid; grid-template-columns: 1.4fr 1fr; gap: 2rem; }
-    .main-photo { width: 100%; height: 360px; background: #111; border-radius: 5px; border: 1px solid var(--border); overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 0.75rem; }
+    .main-photo { width: 100%; height: 360px; background: #111; border-radius: 5px; border: 1px solid var(--border); overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 0.75rem; position: relative; }
     .main-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .main-photo .watermark { font-size: 15px; bottom: 10px; right: 12px; color: rgba(255,255,255,0.15); }
     .thumb-row { display: flex; gap: 8px; }
     .thumb { width: 80px; height: 60px; background: var(--mid2); border-radius: 3px; border: 1.5px solid #3a3a3a; cursor: pointer; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: border-color 0.2s; }
     .thumb.active, .thumb:hover { border-color: var(--red); }
@@ -173,6 +197,12 @@
     .detail-brand { font-size: 12px; color: var(--red); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
     .detail-title { font-family: 'Barlow Condensed', sans-serif; font-size: 46px; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 0.5rem; }
     .detail-price { font-family: 'Barlow Condensed', sans-serif; font-size: 38px; font-weight: 800; color: var(--red); margin-bottom: 1.5rem; }
+    .detail-price.sold-price { color: #666; }
+    .sold-badge-detail {
+      display: inline-block; background: #e74c3c; color: #fff;
+      font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700;
+      letter-spacing: 2px; padding: 3px 12px; border-radius: 2px; margin-bottom: 1rem;
+    }
     .spec-table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; }
     .spec-table tr { border-bottom: 1px solid #222; }
     .spec-table td { padding: 9px 0; font-size: 13px; }
@@ -190,6 +220,18 @@
     .btn-call:hover { background: var(--red-dark); }
     .btn-wa { width: 100%; background: transparent; border: 1.5px solid #25D366; color: #25D366; padding: 11px; border-radius: 3px; font-weight: 600; font-size: 14px; cursor: pointer; font-family: 'Barlow', sans-serif; transition: all 0.2s; }
     .btn-wa:hover { background: #25D366; color: #fff; }
+    .btn-mark-sold {
+      width: 100%; background: transparent; border: 1.5px solid #e74c3c; color: #e74c3c;
+      padding: 11px; border-radius: 3px; font-weight: 700; font-size: 14px; cursor: pointer;
+      font-family: 'Barlow', sans-serif; transition: all 0.2s; margin-top: 8px;
+    }
+    .btn-mark-sold:hover { background: #e74c3c; color: #fff; }
+    .btn-mark-unsold {
+      width: 100%; background: transparent; border: 1.5px solid #27ae60; color: #27ae60;
+      padding: 11px; border-radius: 3px; font-weight: 700; font-size: 14px; cursor: pointer;
+      font-family: 'Barlow', sans-serif; transition: all 0.2s; margin-top: 8px;
+    }
+    .btn-mark-unsold:hover { background: #27ae60; color: #fff; }
     .add-wrap { padding: 2.5rem 2rem; max-width: 720px; }
     .add-wrap h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 38px; font-weight: 800; color: #fff; margin-bottom: 0.25rem; }
     .add-wrap .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 2rem; }
@@ -232,6 +274,11 @@
     .modal-msg.ok { color: #27ae60; }
     footer { background: #0d0d0d; border-top: 1px solid var(--border); padding: 2rem; text-align: center; color: #444; font-size: 13px; }
     footer span { color: var(--red); }
+    .no-listings-hero {
+      text-align: center; padding: 5rem 2rem; color: var(--muted);
+    }
+    .no-listings-hero .icon { font-size: 64px; margin-bottom: 1rem; opacity: 0.3; }
+    .no-listings-hero h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 28px; color: #555; margin-bottom: 0.5rem; }
     @media (max-width: 768px) {
       .detail-layout { grid-template-columns: 1fr; }
       .form-grid { grid-template-columns: 1fr; }
@@ -245,7 +292,25 @@
 <body>
 
 <nav>
-  <div class="logo" onclick="showPage('home')">CAR<span class="r">SELLER</span><span class="s">_MNE</span></div>
+  <!-- Logo SVG inline (your logo embedded as SVG-like placeholder, white/red version) -->
+  <div onclick="showPage('home')" style="cursor:pointer;display:flex;align-items:center;gap:10px">
+    <svg width="48" height="48" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Shield shape -->
+      <path d="M100 10 L180 45 L180 110 Q180 160 100 190 Q20 160 20 110 L20 45 Z" fill="none" stroke="#888" stroke-width="6"/>
+      <!-- Car silhouette -->
+      <ellipse cx="100" cy="105" rx="55" ry="22" fill="none" stroke="#aaa" stroke-width="4"/>
+      <path d="M55 105 Q65 80 100 78 Q135 80 145 105" fill="none" stroke="#aaa" stroke-width="4"/>
+      <circle cx="72" cy="124" r="10" fill="#333" stroke="#888" stroke-width="3"/>
+      <circle cx="128" cy="124" r="10" fill="#333" stroke="#888" stroke-width="3"/>
+      <!-- Orange accent lines -->
+      <line x1="38" y1="115" x2="55" y2="115" stroke="#C0392B" stroke-width="4" stroke-linecap="round"/>
+      <line x1="145" y1="115" x2="162" y2="115" stroke="#C0392B" stroke-width="4" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:#fff;letter-spacing:1px;line-height:1">CARSELLER<span style="color:#C0392B">_MNE</span></div>
+      <div style="font-size:9px;color:#555;letter-spacing:2px;text-transform:uppercase">Auto Trgovina Montenegro</div>
+    </div>
+  </div>
   <div class="nav-links">
     <a onclick="showPage('home')" id="navHome" class="active">Početna</a>
     <a onclick="showPage('listings')" id="navListings">Vozila</a>
@@ -272,7 +337,7 @@
       <button class="btn-outline" onclick="openModal('register')">Besplatna registracija</button>
     </div>
     <div class="hero-stats">
-      <div class="stat"><div class="num" id="heroCount">3</div><div class="lbl">Aktivnih oglasa</div></div>
+      <div class="stat"><div class="num" id="heroCount">0</div><div class="lbl">Aktivnih oglasa</div></div>
       <div class="stat"><div class="num">MNE</div><div class="lbl">Pokrivenost</div></div>
       <div class="stat"><div class="num">0%</div><div class="lbl">Provizija</div></div>
     </div>
@@ -412,14 +477,9 @@
 <script>
 let currentUser = null;
 let addedPhotos = [];
-let users = [
-  { email: 'admin@carseller.me', pass: 'admin123', name: 'Marko Petrović', phone: '+382 67 000 000', isAdmin: true }
-];
-let cars = [
-  { id:1, marka:'BMW', model:'320d xDrive M-Sport', godina:2021, cijena:28500, km:64000, gorivo:'Dizel', mjenjac:'Automatik', ks:190, karoserija:'Limuzina', boja:'Alpina bijela metalizovana', reg:'04/2026', grad:'Podgorica', tablice:'PG-712-BK', opis:'Vozilo u odličnom stanju, garažirano, servisna knjiga kompletna, nikad oštećeno, jedan vlasnik od nova. Full M-sport paket, sve dostupno na uvid u ovlašćenom BMW servisu.', oprema:['M-Sport paket','Panorama krov','Navigacija Pro','Senzori 360°','LED Matrici','Digitalni kokpit','Head-Up display','Wireless punjenje','Grijana sjedišta'], prodavac:'Marko Petrović', tel:'+382 67 123 456', photo:null },
-  { id:2, marka:'Mercedes', model:'C 220d AMG Line Karavan', godina:2020, cijena:31000, km:89000, gorivo:'Dizel', mjenjac:'Automatik', ks:194, karoserija:'Karavan', boja:'Selenite siva metalizovana', reg:'09/2025', grad:'Bar', tablice:'BR-444-XZ', opis:'AMG Line paket, nije oštećen, redovni servis u ovlašćenom Mercedes servisu. Moguća zamjena za manji auto uz doplatu.', oprema:['AMG Line','Burmester audio','Panorama','Multibeam LED','Kamera za vožnju unatrag','Wireless punjenje','Head-up display','Keyless go'], prodavac:'Jovana Nikolić', tel:'+382 69 654 321', photo:null },
-  { id:3, marka:'Volkswagen', model:'Golf 8 GTI Performance', godina:2023, cijena:36500, km:18000, gorivo:'Benzin', mjenjac:'Automatik', ks:245, karoserija:'Hatchback', boja:'Tornado crvena', reg:'11/2026', grad:'Nikšić', tablice:'NK-101-GT', opis:'Potpuno nov, u garanciji do 2026. Kupljen u ovlašćenom VW zastupniku u CG. Sport paket ekstra.', oprema:['Harman Kardon','Virtual Cockpit Pro','DCC amortizeri','IQ.LIGHT LED','Parking assist+','Sjedišta Recaro','Klima 3-zone','CarPlay/Android Auto'], prodavac:'Stefan Vujović', tel:'+382 68 987 654', photo:null }
-];
+let users = [];
+let cars = [];
+// Empty - no demo cars. Users add their own.
 
 function toast(msg, type) {
   const t = document.getElementById('toast');
@@ -433,25 +493,72 @@ function carSVG(w, h) {
   return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 140 90" fill="none"><rect x="8" y="38" width="124" height="34" rx="5" fill="#2a2a2a"/><rect x="22" y="22" width="80" height="24" rx="4" fill="#222"/><rect x="30" y="26" width="30" height="16" rx="2" fill="#1a1a1a"/><rect x="65" y="26" width="30" height="16" rx="2" fill="#1a1a1a"/><circle cx="30" cy="74" r="13" fill="#222"/><circle cx="30" cy="74" r="7" fill="#1a1a1a"/><circle cx="110" cy="74" r="13" fill="#222"/><circle cx="110" cy="74" r="7" fill="#1a1a1a"/><rect x="8" y="56" width="8" height="10" rx="1" fill="#C0392B" opacity="0.6"/><rect x="124" y="56" width="8" height="10" rx="1" fill="#C0392B" opacity="0.6"/></svg>';
 }
 
+function isOwner(car) {
+  return currentUser && car.ownerEmail === currentUser.email;
+}
+
+function toggleSold(id, e) {
+  e.stopPropagation();
+  const c = cars.find(x => x.id === id);
+  if (!c || !isOwner(c)) return;
+  c.sold = !c.sold;
+  toast(c.sold ? 'Oglas označen kao PRODATO.' : 'Oglas ponovo aktivan.', 'success');
+  const activePage = document.querySelector('.page.active');
+  if (activePage && activePage.id === 'page-listings') filterCars();
+  if (activePage && activePage.id === 'page-home') renderGrid(cars.slice(0,6), 'featuredGrid');
+  updateHeroCount();
+}
+
 function renderCard(c) {
-  return '<div class="car-card" onclick="showDetail('+c.id+')">'
+  const soldOverlay = c.sold ? '<div class="sold-overlay"><div class="sold-stamp">PRODATO</div></div>' : '';
+  const ownerBtns = isOwner(c) 
+    ? (c.sold 
+        ? '<button class="btn-sold-toggle is-sold" onclick="toggleSold('+c.id+',event)" title="Označi kao aktivno">✓ Prodato</button>'
+        : '<button class="btn-sold-toggle" onclick="toggleSold('+c.id+',event)" title="Označi kao prodato">Prodato?</button>')
+    : '';
+  return '<div class="car-card'+(c.sold?' sold-card':'')+'" onclick="showDetail('+c.id+')">'
     +'<div class="car-img-wrap">'
+    +soldOverlay
     +(c.photo ? '<img src="'+c.photo+'" alt="'+c.marka+' '+c.model+'" loading="lazy">' : '<div class="car-placeholder">'+carSVG(140,90)+'</div>')
+    +'<div class="watermark">CarSeller_MNE</div>'
     +'<div class="car-gorivo-badge">'+c.gorivo.toUpperCase()+'</div>'
     +'</div>'
     +'<div class="car-body">'
     +'<div class="car-make">'+c.marka+'</div>'
     +'<div class="car-name">'+c.model+'</div>'
     +'<div class="car-specs"><span class="spec-pill">'+c.godina+'</span><span class="spec-pill">'+c.km.toLocaleString()+' km</span><span class="spec-pill">'+c.ks+' KS</span><span class="spec-pill">'+c.mjenjac+'</span></div>'
-    +'<div class="car-price">'+c.cijena.toLocaleString()+' €</div>'
-    +'<div class="car-footer"><span class="car-location">📍 '+c.grad+'</span><button class="btn-details">Detalji</button></div>'
+    +'<div class="car-price'+(c.sold?' sold-price':'')+'">'+(c.sold?'PRODATO':c.cijena.toLocaleString()+' €')+'</div>'
+    +'<div class="car-footer"><span class="car-location">📍 '+c.grad+'</span>'
+    +'<div style="display:flex;gap:4px;align-items:center">'
+    +ownerBtns
+    +'<button class="btn-details" onclick="event.stopPropagation();showDetail('+c.id+')">Detalji</button>'
+    +'</div>'
+    +'</div>'
     +'</div></div>';
 }
 
 function renderGrid(list, id) {
   const g = document.getElementById(id);
   if (!g) return;
-  g.innerHTML = list.length ? list.map(renderCard).join('') : '<p class="empty-msg">Nema oglasa koji odgovaraju filteru.</p>';
+  if (!list.length) {
+    if (id === 'featuredGrid') {
+      g.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:4rem 2rem;color:#555">'
+        +'<div style="font-size:48px;margin-bottom:1rem;opacity:0.3">🚗</div>'
+        +'<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:24px;color:#444;margin-bottom:0.5rem">Nema oglasa još</div>'
+        +'<div style="font-size:13px;color:#444">Budite prvi koji će objaviti vozilo!</div>'
+        +(currentUser ? '<br><button class="btn-primary" onclick="showPage(\'add\')" style="margin-top:1rem">+ Dodaj oglas</button>' : '<br><button class="btn-primary" onclick="openModal(\'register\')" style="margin-top:1rem">Registruj se besplatno</button>')
+        +'</div>';
+    } else {
+      g.innerHTML = '<p class="empty-msg">Nema oglasa koji odgovaraju filteru.</p>';
+    }
+    return;
+  }
+  g.innerHTML = list.map(renderCard).join('');
+}
+
+function updateHeroCount() {
+  const active = cars.filter(c => !c.sold).length;
+  document.getElementById('heroCount').textContent = active;
 }
 
 function showPage(p) {
@@ -461,7 +568,7 @@ function showPage(p) {
   document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
   const navMap = {home:'navHome', listings:'navListings', add:'addCarNav'};
   if (navMap[p]) { const el = document.getElementById(navMap[p]); if(el) el.classList.add('active'); }
-  if (p === 'home') { renderGrid(cars.slice(0,3), 'featuredGrid'); document.getElementById('heroCount').textContent = cars.length; }
+  if (p === 'home') { renderGrid(cars.slice(0,6), 'featuredGrid'); updateHeroCount(); }
   if (p === 'listings') filterCars();
   window.scrollTo(0, 0);
 }
@@ -482,16 +589,29 @@ function showDetail(id) {
   if (!c) return;
   const ini = c.prodavac.split(' ').map(n=>n[0]).join('').slice(0,2);
   const clean = c.tel.replace(/[^\d+]/g,'');
+  const soldBadge = c.sold ? '<div class="sold-badge-detail">🔴 PRODATO</div>' : '';
+  
+  // Owner controls in detail view
+  let ownerControls = '';
+  if (isOwner(c)) {
+    if (c.sold) {
+      ownerControls = '<button class="btn-mark-unsold" onclick="toggleSoldDetail('+c.id+')">↩ Vrati kao aktivan oglas</button>';
+    } else {
+      ownerControls = '<button class="btn-mark-sold" onclick="toggleSoldDetail('+c.id+')">✓ Označi kao PRODATO</button>';
+    }
+  }
+
   document.getElementById('detailContent').innerHTML =
     '<div>'
-    +'<div class="main-photo">'+(c.photo?'<img src="'+c.photo+'" alt="'+c.marka+'">':carSVG(160,100))+'</div>'
+    +'<div class="main-photo">'+(c.photo?'<img src="'+c.photo+'" alt="'+c.marka+'">':carSVG(160,100))+'<div class="watermark">CarSeller_MNE</div></div>'
     +'<div class="thumb-row"><div class="thumb active">'+(c.photo?'<img src="'+c.photo+'">':carSVG(40,30))+'</div><div class="thumb" style="opacity:0.3">'+carSVG(40,30)+'</div><div class="thumb" style="opacity:0.3">'+carSVG(40,30)+'</div></div>'
     +'<div class="equipment-box"><div class="section-label">Oprema i dodaci</div><div class="equip-list">'+(c.oprema||[]).map(o=>'<span class="equip-tag">'+o+'</span>').join('')+'</div></div>'
     +'</div>'
     +'<div>'
+    +soldBadge
     +'<div class="detail-brand">'+c.marka+'</div>'
     +'<div class="detail-title">'+c.model+'</div>'
-    +'<div class="detail-price">'+c.cijena.toLocaleString()+' €</div>'
+    +'<div class="detail-price'+(c.sold?' sold-price':'')+'">'+(c.sold?'PRODATO':c.cijena.toLocaleString()+' €')+'</div>'
     +'<table class="spec-table">'
     +'<tr><td>Godište</td><td>'+c.godina+'</td></tr>'
     +'<tr><td>Kilometraža</td><td>'+c.km.toLocaleString()+' km</td></tr>'
@@ -507,10 +627,20 @@ function showDetail(id) {
     +'<div class="desc-box"><div class="section-label">Opis vozila</div><p>'+(c.opis||'Nema opisa.')+'</p></div>'
     +'<div class="seller-box"><div class="seller-head">Kontakt prodavca</div>'
     +'<div class="seller-info"><div class="seller-avatar">'+ini+'</div><div><div class="seller-name">'+c.prodavac+'</div><div class="seller-phone">'+c.tel+'</div></div></div>'
-    +'<button class="btn-call" onclick="window.location.href=\'tel:'+clean+'\'">📞 Pozovi prodavca</button>'
-    +'<button class="btn-wa" onclick="window.open(\'https://wa.me/'+clean+'\')">WhatsApp kontakt</button>'
+    +(c.sold ? '<div style="background:#1a1a1a;border:1px solid #333;border-radius:3px;padding:1rem;text-align:center;color:#666;font-size:13px">Ovo vozilo je prodato.</div>'
+      : '<button class="btn-call" onclick="window.location.href=\'tel:'+clean+'\'">📞 Pozovi prodavca</button>'
+        +'<button class="btn-wa" onclick="window.open(\'https://wa.me/'+clean+'\')">WhatsApp kontakt</button>')
+    +ownerControls
     +'</div></div>';
   showPage('detail');
+}
+
+function toggleSoldDetail(id) {
+  const c = cars.find(x => x.id === id);
+  if (!c || !isOwner(c)) return;
+  c.sold = !c.sold;
+  toast(c.sold ? 'Oglas označen kao PRODATO.' : 'Oglas ponovo aktivan.', 'success');
+  showDetail(id);
 }
 
 function openModal(tab) {
@@ -531,8 +661,12 @@ function switchTab(t) {
 function setLoggedIn() {
   document.getElementById('navAuthArea').innerHTML = '<button class="btn-nav-login" onclick="logout()" style="border-color:#444;color:#777">Odjava</button>';
   document.getElementById('profileBar').style.display = 'flex';
-  document.getElementById('profileName').textContent = currentUser.name + (currentUser.isAdmin?' · Admin':'');
+  document.getElementById('profileName').textContent = currentUser.name;
   document.getElementById('addCarNav').style.display = 'inline';
+  // Re-render to show owner buttons
+  const activePage = document.querySelector('.page.active');
+  if (activePage && activePage.id === 'page-home') renderGrid(cars.slice(0,6), 'featuredGrid');
+  if (activePage && activePage.id === 'page-listings') filterCars();
 }
 
 function logout() {
@@ -540,6 +674,10 @@ function logout() {
   document.getElementById('navAuthArea').innerHTML = '<button class="btn-nav-login" onclick="openModal(\'login\')">Prijavi se</button>';
   document.getElementById('profileBar').style.display = 'none';
   document.getElementById('addCarNav').style.display = 'none';
+  // Re-render to hide owner buttons
+  const activePage = document.querySelector('.page.active');
+  if (activePage && activePage.id === 'page-home') renderGrid(cars.slice(0,6), 'featuredGrid');
+  if (activePage && activePage.id === 'page-listings') filterCars();
   toast('Uspješno ste odjavljeni.');
 }
 
@@ -608,7 +746,9 @@ function submitCar() {
     oprema: document.getElementById('addOprema').value.trim().split(',').map(x=>x.trim()).filter(Boolean),
     prodavac: currentUser.name,
     tel: currentUser.phone||'+382 xx xxx xxx',
-    photo: addedPhotos[0]||null
+    ownerEmail: currentUser.email,
+    photo: addedPhotos[0]||null,
+    sold: false
   });
   toast('Oglas uspješno objavljen!', 'success');
   ['addModel','addGodina','addCijena','addKm','addKs','addBoja','addReg','addGrad','addTablice','addOpis','addOprema'].forEach(id=>{ document.getElementById(id).value=''; });
@@ -617,8 +757,9 @@ function submitCar() {
   setTimeout(()=>showPage('listings'), 1000);
 }
 
-renderGrid(cars.slice(0,3), 'featuredGrid');
-document.getElementById('heroCount').textContent = cars.length;
+// Init
+renderGrid([], 'featuredGrid');
+updateHeroCount();
 </script>
 </body>
 </html>
