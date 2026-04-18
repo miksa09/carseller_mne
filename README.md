@@ -1,1 +1,624 @@
-# carseller_mne
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CarSeller_MNE – Berza vozila Crna Gora</title>
+  <meta name="description" content="Kupovina i prodaja vozila u Crnoj Gori. Pogledajte oglase, specifikacije i kontaktirajte prodavce direktno.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --red: #C0392B;
+      --red-dark: #922B21;
+      --dark: #141414;
+      --mid: #1e1e1e;
+      --mid2: #282828;
+      --border: #333;
+      --text: #e8e5e0;
+      --muted: #888;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+    nav {
+      background: rgba(20,20,20,0.97);
+      backdrop-filter: blur(10px);
+      border-bottom: 2px solid var(--red);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 66px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #fff;
+      cursor: pointer;
+      user-select: none;
+    }
+    .logo .r { color: var(--red); }
+    .logo .s { color: #555; font-size: 16px; font-weight: 400; }
+    .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+    .nav-links a {
+      color: #aaa; text-decoration: none; font-size: 14px; font-weight: 500;
+      cursor: pointer; transition: color 0.2s; padding: 4px 0;
+      border-bottom: 2px solid transparent;
+    }
+    .nav-links a:hover, .nav-links a.active { color: #fff; border-bottom-color: var(--red); }
+    #addCarNav { display: none; }
+    .btn-nav-login {
+      background: transparent; border: 1.5px solid var(--red); color: var(--red);
+      padding: 7px 18px; border-radius: 3px; font-weight: 600; font-size: 13px;
+      cursor: pointer; transition: all 0.2s; font-family: 'Barlow', sans-serif;
+    }
+    .btn-nav-login:hover { background: var(--red); color: #fff; }
+    .btn-primary {
+      background: var(--red); border: none; color: #fff; padding: 11px 24px;
+      border-radius: 3px; font-weight: 700; font-size: 14px; cursor: pointer;
+      font-family: 'Barlow', sans-serif; transition: background 0.2s;
+    }
+    .btn-primary:hover { background: var(--red-dark); }
+    .btn-outline {
+      background: transparent; border: 1.5px solid #444; color: #aaa; padding: 11px 24px;
+      border-radius: 3px; font-weight: 600; font-size: 14px; cursor: pointer;
+      font-family: 'Barlow', sans-serif; transition: all 0.2s;
+    }
+    .btn-outline:hover { border-color: #888; color: #fff; }
+    #profileBar {
+      display: none; background: #0d0d0d; border-bottom: 1px solid var(--border);
+      padding: 8px 2rem; align-items: center; gap: 10px; font-size: 13px; color: var(--muted);
+    }
+    #profileBar strong { color: var(--text); }
+    .logout-btn {
+      margin-left: auto; cursor: pointer; color: var(--muted); font-size: 12px;
+      background: none; border: none; font-family: 'Barlow', sans-serif; transition: color 0.2s;
+    }
+    .logout-btn:hover { color: var(--red); }
+    .page { display: none; }
+    .page.active { display: block; }
+    .hero {
+      background: var(--dark); padding: 5rem 2rem 4rem; text-align: center;
+      position: relative; overflow: hidden; border-bottom: 1px solid var(--border);
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: repeating-linear-gradient(0deg,transparent,transparent 60px,rgba(255,255,255,0.012) 60px,rgba(255,255,255,0.012) 61px),
+                  repeating-linear-gradient(90deg,transparent,transparent 60px,rgba(255,255,255,0.012) 60px,rgba(255,255,255,0.012) 61px);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-block; background: var(--red); color: #fff;
+      font-size: 11px; font-weight: 700; padding: 4px 14px; letter-spacing: 2.5px;
+      border-radius: 2px; margin-bottom: 1.5rem; position: relative; z-index: 1;
+    }
+    .hero h1 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(48px, 8vw, 80px); font-weight: 800; line-height: 0.95;
+      letter-spacing: -1px; color: #fff; margin-bottom: 1rem; position: relative; z-index: 1;
+    }
+    .hero h1 span { color: var(--red); }
+    .hero p {
+      color: #777; font-size: 17px; font-weight: 300; max-width: 480px;
+      margin: 0 auto 2rem; position: relative; z-index: 1;
+    }
+    .hero-cta { position: relative; z-index: 1; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .hero-stats { display: flex; gap: 4rem; justify-content: center; margin-top: 3.5rem; position: relative; z-index: 1; flex-wrap: wrap; }
+    .stat .num { font-family: 'Barlow Condensed', sans-serif; font-size: 40px; font-weight: 800; color: var(--red); line-height: 1; }
+    .stat .lbl { font-size: 11px; color: #555; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px; }
+    .section-label { font-size: 11px; color: var(--red); font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 1rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--border); }
+    .featured-section { padding: 3rem 2rem; }
+    .featured-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+    .featured-header h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 30px; font-weight: 700; color: #fff; }
+    .see-all { font-size: 13px; color: var(--red); cursor: pointer; font-weight: 600; }
+    .see-all:hover { opacity: 0.7; }
+    .cars-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1.25rem; }
+    .car-card {
+      background: var(--mid); border-radius: 5px; overflow: hidden;
+      border: 1px solid var(--border); transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s; cursor: pointer;
+    }
+    .car-card:hover { transform: translateY(-4px); border-color: var(--red); box-shadow: 0 8px 30px rgba(192,57,43,0.15); }
+    .car-img-wrap { position: relative; }
+    .car-img-wrap img { width: 100%; height: 200px; object-fit: cover; display: block; }
+    .car-placeholder { width: 100%; height: 200px; background: #111; display: flex; align-items: center; justify-content: center; }
+    .car-gorivo-badge { position: absolute; top: 10px; left: 10px; background: var(--red); color: #fff; font-size: 10px; font-weight: 700; padding: 3px 9px; letter-spacing: 1px; border-radius: 2px; }
+    .car-body { padding: 1rem 1.25rem 1.25rem; }
+    .car-make { font-size: 11px; color: var(--red); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 2px; }
+    .car-name { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 700; color: #fff; margin-bottom: 0.75rem; line-height: 1.1; }
+    .car-specs { display: flex; gap: 6px; margin-bottom: 1rem; flex-wrap: wrap; }
+    .spec-pill { background: #111; border: 1px solid #3a3a3a; color: #aaa; font-size: 11px; padding: 3px 8px; border-radius: 2px; }
+    .car-price { font-family: 'Barlow Condensed', sans-serif; font-size: 28px; font-weight: 800; color: var(--red); }
+    .car-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+    .car-location { font-size: 12px; color: #666; }
+    .btn-details { background: transparent; border: 1px solid var(--red); color: var(--red); padding: 5px 14px; border-radius: 2px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Barlow', sans-serif; transition: all 0.2s; }
+    .btn-details:hover { background: var(--red); color: #fff; }
+    .filters-bar {
+      background: var(--mid); padding: 1.25rem 2rem; display: flex; gap: 0.75rem;
+      flex-wrap: wrap; align-items: center; border-bottom: 1px solid var(--border);
+      position: sticky; top: 66px; z-index: 99;
+    }
+    .filters-bar select, .filters-bar input {
+      background: #111; border: 1px solid #3a3a3a; color: #ddd; padding: 8px 12px;
+      border-radius: 3px; font-size: 13px; font-family: 'Barlow', sans-serif; outline: none; transition: border-color 0.2s;
+    }
+    .filters-bar select:focus, .filters-bar input:focus { border-color: var(--red); }
+    .filter-count { margin-left: auto; color: var(--muted); font-size: 13px; }
+    .listings-content { padding: 2rem; }
+    .empty-msg { color: var(--muted); padding: 3rem; text-align: center; grid-column: 1/-1; }
+    .back-btn { display: inline-flex; align-items: center; gap: 6px; color: var(--red); font-size: 14px; font-weight: 600; cursor: pointer; padding: 1.5rem 2rem 0; }
+    .back-btn:hover { opacity: 0.7; }
+    .detail-layout { padding: 1.5rem 2rem 4rem; display: grid; grid-template-columns: 1.4fr 1fr; gap: 2rem; }
+    .main-photo { width: 100%; height: 360px; background: #111; border-radius: 5px; border: 1px solid var(--border); overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 0.75rem; }
+    .main-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .thumb-row { display: flex; gap: 8px; }
+    .thumb { width: 80px; height: 60px; background: var(--mid2); border-radius: 3px; border: 1.5px solid #3a3a3a; cursor: pointer; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: border-color 0.2s; }
+    .thumb.active, .thumb:hover { border-color: var(--red); }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .equipment-box { margin-top: 1.25rem; background: #111; border: 1px solid var(--border); border-radius: 4px; padding: 1.25rem; }
+    .equip-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 0.75rem; }
+    .equip-tag { background: var(--mid2); border: 1px solid #333; color: #bbb; font-size: 12px; padding: 4px 10px; border-radius: 2px; }
+    .equip-tag::before { content: '✓ '; color: var(--red); }
+    .detail-brand { font-size: 12px; color: var(--red); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+    .detail-title { font-family: 'Barlow Condensed', sans-serif; font-size: 46px; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 0.5rem; }
+    .detail-price { font-family: 'Barlow Condensed', sans-serif; font-size: 38px; font-weight: 800; color: var(--red); margin-bottom: 1.5rem; }
+    .spec-table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; }
+    .spec-table tr { border-bottom: 1px solid #222; }
+    .spec-table td { padding: 9px 0; font-size: 13px; }
+    .spec-table td:first-child { color: var(--muted); width: 45%; }
+    .spec-table td:last-child { color: var(--text); font-weight: 500; }
+    .desc-box { background: #111; border: 1px solid var(--border); border-radius: 4px; padding: 1.25rem; margin-bottom: 1.25rem; }
+    .desc-box p { font-size: 13px; color: #bbb; line-height: 1.7; margin-top: 0.5rem; }
+    .seller-box { background: var(--mid); border: 1px solid var(--border); border-radius: 5px; padding: 1.25rem; }
+    .seller-head { font-size: 11px; color: #666; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 0.75rem; }
+    .seller-info { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; }
+    .seller-avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--red); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 17px; color: #fff; flex-shrink: 0; }
+    .seller-name { font-weight: 600; color: #fff; font-size: 15px; }
+    .seller-phone { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .btn-call { width: 100%; background: var(--red); border: none; color: #fff; padding: 13px; border-radius: 3px; font-weight: 700; font-size: 15px; cursor: pointer; font-family: 'Barlow', sans-serif; transition: background 0.2s; margin-bottom: 8px; }
+    .btn-call:hover { background: var(--red-dark); }
+    .btn-wa { width: 100%; background: transparent; border: 1.5px solid #25D366; color: #25D366; padding: 11px; border-radius: 3px; font-weight: 600; font-size: 14px; cursor: pointer; font-family: 'Barlow', sans-serif; transition: all 0.2s; }
+    .btn-wa:hover { background: #25D366; color: #fff; }
+    .add-wrap { padding: 2.5rem 2rem; max-width: 720px; }
+    .add-wrap h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 38px; font-weight: 800; color: #fff; margin-bottom: 0.25rem; }
+    .add-wrap .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 2rem; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group label { display: block; font-size: 12px; color: var(--muted); letter-spacing: 0.5px; margin-bottom: 5px; font-weight: 500; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; background: var(--mid); border: 1px solid #333; color: #ddd; padding: 10px 12px; border-radius: 3px; font-size: 14px; font-family: 'Barlow', sans-serif; outline: none; transition: border-color 0.2s; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--red); }
+    .form-group textarea { resize: vertical; min-height: 90px; }
+    .form-group.full { grid-column: 1/-1; }
+    .upload-zone { border: 2px dashed #3a3a3a; border-radius: 4px; padding: 2rem; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; }
+    .upload-zone:hover { border-color: var(--red); background: rgba(192,57,43,0.03); }
+    .upload-zone .icon { font-size: 40px; margin-bottom: 0.5rem; }
+    .upload-zone p { color: var(--muted); font-size: 14px; }
+    .upload-zone small { color: #444; font-size: 12px; }
+    .photo-previews { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .photo-previews img { width: 80px; height: 60px; object-fit: cover; border-radius: 3px; border: 1.5px solid #444; }
+    .form-section { font-size: 11px; color: var(--red); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+    .btn-submit { width: 100%; background: var(--red); border: none; color: #fff; padding: 14px; border-radius: 3px; font-weight: 700; font-size: 16px; cursor: pointer; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 1px; transition: background 0.2s; margin-top: 2rem; }
+    .btn-submit:hover { background: var(--red-dark); }
+    #toast { position: fixed; bottom: 2rem; right: 2rem; background: #222; border: 1px solid #444; border-left: 4px solid var(--red); color: var(--text); padding: 1rem 1.5rem; border-radius: 4px; font-size: 14px; font-weight: 500; z-index: 9999; transform: translateY(80px); opacity: 0; transition: all 0.3s ease; max-width: 300px; }
+    #toast.show { transform: translateY(0); opacity: 1; }
+    #toast.success { border-left-color: #27ae60; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 2000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+    .modal-overlay.hidden { display: none; }
+    .modal-box { background: var(--mid); border: 1px solid #3a3a3a; border-radius: 6px; padding: 2.5rem; width: 380px; position: relative; }
+    .modal-close { position: absolute; top: 14px; right: 18px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer; line-height: 1; }
+    .modal-close:hover { color: #fff; }
+    .modal-logo { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 800; color: #fff; text-align: center; margin-bottom: 1.5rem; }
+    .modal-logo span { color: var(--red); }
+    .modal-tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
+    .modal-tab { flex: 1; padding: 9px; text-align: center; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; background: none; border-left: none; border-right: none; border-top: none; font-family: 'Barlow', sans-serif; }
+    .modal-tab.active { color: var(--red); border-bottom-color: var(--red); }
+    .modal-form label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; font-weight: 500; }
+    .modal-form input { width: 100%; background: #111; border: 1px solid #3a3a3a; color: #ddd; padding: 10px 12px; border-radius: 3px; font-size: 14px; font-family: 'Barlow', sans-serif; outline: none; margin-bottom: 1rem; }
+    .modal-form input:focus { border-color: var(--red); }
+    .btn-modal { width: 100%; background: var(--red); border: none; color: #fff; padding: 12px; border-radius: 3px; font-weight: 700; font-size: 15px; cursor: pointer; font-family: 'Barlow', sans-serif; transition: background 0.2s; margin-top: 4px; }
+    .btn-modal:hover { background: var(--red-dark); }
+    .modal-msg { text-align: center; font-size: 12px; margin-top: 0.75rem; min-height: 18px; }
+    .modal-msg.error { color: #e74c3c; }
+    .modal-msg.ok { color: #27ae60; }
+    footer { background: #0d0d0d; border-top: 1px solid var(--border); padding: 2rem; text-align: center; color: #444; font-size: 13px; }
+    footer span { color: var(--red); }
+    @media (max-width: 768px) {
+      .detail-layout { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-group.full { grid-column: 1; }
+      nav { padding: 0 1rem; }
+      .hero h1 { font-size: 48px; }
+      .hero-stats { gap: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo" onclick="showPage('home')">CAR<span class="r">SELLER</span><span class="s">_MNE</span></div>
+  <div class="nav-links">
+    <a onclick="showPage('home')" id="navHome" class="active">Početna</a>
+    <a onclick="showPage('listings')" id="navListings">Vozila</a>
+    <a onclick="showPage('add')" id="addCarNav">+ Dodaj oglas</a>
+    <div id="navAuthArea">
+      <button class="btn-nav-login" onclick="openModal('login')">Prijavi se</button>
+    </div>
+  </div>
+</nav>
+
+<div id="profileBar">
+  <span>Prijavljeni ste kao: <strong id="profileName"></strong></span>
+  <button class="logout-btn" onclick="logout()">Odjava</button>
+</div>
+
+<!-- HOME -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-badge">CRNA GORA · BERZA VOZILA</div>
+    <h1>Pronađi svoje<br><span>savršeno vozilo</span></h1>
+    <p>Specifikacije, galerija slika i direktan kontakt sa prodavcem — sve na jednom mjestu.</p>
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="showPage('listings')">Pregledaj oglase →</button>
+      <button class="btn-outline" onclick="openModal('register')">Besplatna registracija</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="num" id="heroCount">3</div><div class="lbl">Aktivnih oglasa</div></div>
+      <div class="stat"><div class="num">MNE</div><div class="lbl">Pokrivenost</div></div>
+      <div class="stat"><div class="num">0%</div><div class="lbl">Provizija</div></div>
+    </div>
+  </div>
+  <div class="featured-section">
+    <div class="featured-header">
+      <h2>Najnoviji oglasi</h2>
+      <span class="see-all" onclick="showPage('listings')">Vidi sve →</span>
+    </div>
+    <div class="cars-grid" id="featuredGrid"></div>
+  </div>
+</div>
+
+<!-- LISTINGS -->
+<div id="page-listings" class="page">
+  <div class="filters-bar">
+    <select id="fMarka" onchange="filterCars()">
+      <option value="">Sve marke</option>
+      <option>Audi</option><option>BMW</option><option>Citroen</option><option>Dacia</option>
+      <option>Fiat</option><option>Ford</option><option>Honda</option><option>Hyundai</option>
+      <option>Kia</option><option>Mazda</option><option>Mercedes</option><option>Nissan</option>
+      <option>Opel</option><option>Peugeot</option><option>Renault</option><option>Seat</option>
+      <option>Skoda</option><option>Toyota</option><option>Volkswagen</option><option>Volvo</option>
+    </select>
+    <select id="fGodina" onchange="filterCars()">
+      <option value="">Sve godine</option>
+      <option>2024</option><option>2023</option><option>2022</option><option>2021</option>
+      <option>2020</option><option>2019</option><option>2018</option><option>2017</option>
+      <option>2016</option><option>2015</option><option>2014</option>
+    </select>
+    <select id="fGorivo" onchange="filterCars()">
+      <option value="">Gorivo</option>
+      <option>Benzin</option><option>Dizel</option><option>Hibrid</option><option>Električno</option><option>Gas (LPG)</option>
+    </select>
+    <select id="fKaroserija" onchange="filterCars()">
+      <option value="">Karoserija</option>
+      <option>Limuzina</option><option>Hatchback</option><option>Karavan</option>
+      <option>SUV</option><option>Kupe</option><option>Kabriolet</option><option>Pickup</option>
+    </select>
+    <input type="number" id="fMaxCijena" placeholder="Max cijena (€)" oninput="filterCars()" style="width:150px">
+    <span class="filter-count" id="filterCount"></span>
+  </div>
+  <div class="listings-content">
+    <div class="cars-grid" id="carsGrid"></div>
+  </div>
+</div>
+
+<!-- DETAIL -->
+<div id="page-detail" class="page">
+  <div class="back-btn" onclick="showPage('listings')">← Nazad na oglase</div>
+  <div class="detail-layout" id="detailContent"></div>
+</div>
+
+<!-- ADD CAR -->
+<div id="page-add" class="page">
+  <div class="add-wrap">
+    <h2>Novi oglas</h2>
+    <p class="subtitle">Popunite sve podatke za što bolji oglas.</p>
+    <div class="form-section">Osnovi podaci</div>
+    <div class="form-grid">
+      <div class="form-group"><label>Marka *</label>
+        <select id="addMarka">
+          <option>Audi</option><option>BMW</option><option>Citroen</option><option>Dacia</option>
+          <option>Fiat</option><option>Ford</option><option>Honda</option><option>Hyundai</option>
+          <option>Kia</option><option>Mazda</option><option>Mercedes</option><option>Nissan</option>
+          <option>Opel</option><option>Peugeot</option><option>Renault</option><option>Seat</option>
+          <option>Skoda</option><option>Toyota</option><option>Volkswagen</option><option>Volvo</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Model *</label><input type="text" id="addModel" placeholder="npr. Golf 8 GTI"></div>
+      <div class="form-group"><label>Godište *</label><input type="number" id="addGodina" placeholder="2021" min="1990" max="2025"></div>
+      <div class="form-group"><label>Cijena (€) *</label><input type="number" id="addCijena" placeholder="15000" min="100"></div>
+      <div class="form-group"><label>Kilometraža (km)</label><input type="number" id="addKm" placeholder="85000" min="0"></div>
+      <div class="form-group"><label>Gorivo</label><select id="addGorivo"><option>Dizel</option><option>Benzin</option><option>Hibrid</option><option>Električno</option><option>Gas (LPG)</option></select></div>
+      <div class="form-group"><label>Mjenjač</label><select id="addMjenjac"><option>Automatik</option><option>Manuelni</option></select></div>
+      <div class="form-group"><label>Snaga motora (KS)</label><input type="number" id="addKs" placeholder="150"></div>
+      <div class="form-group"><label>Karoserija</label><select id="addKar"><option>Limuzina</option><option>Hatchback</option><option>Karavan</option><option>SUV</option><option>Kupe</option><option>Kabriolet</option><option>Pickup</option></select></div>
+      <div class="form-group"><label>Boja</label><input type="text" id="addBoja" placeholder="Crna metalizovana"></div>
+      <div class="form-group"><label>Registracija do</label><input type="text" id="addReg" placeholder="06/2026"></div>
+      <div class="form-group"><label>Grad / Opština</label><input type="text" id="addGrad" placeholder="Podgorica"></div>
+      <div class="form-group full"><label>Tablice</label><input type="text" id="addTablice" placeholder="PG-000-AA"></div>
+    </div>
+    <div class="form-section">Opis i oprema</div>
+    <div class="form-group" style="margin-bottom:1rem"><label>Detaljan opis</label><textarea id="addOpis" placeholder="Stanje vozila, historija servisa, razlog prodaje..."></textarea></div>
+    <div class="form-group"><label>Oprema (odvojite zarezom)</label><input type="text" id="addOprema" placeholder="Klima, Navigacija, Parking senzori, LED, Kamera..."></div>
+    <div class="form-section">Fotografije</div>
+    <div class="upload-zone" onclick="document.getElementById('photoInput').click()">
+      <div class="icon">📷</div>
+      <p>Klikni ovdje da dodaš fotografije</p>
+      <small>JPG, PNG · Preporučeno minimum 5 fotografija</small>
+      <input type="file" id="photoInput" accept="image/*" multiple style="display:none" onchange="previewPhotos(event)">
+    </div>
+    <div class="photo-previews" id="photoPreview"></div>
+    <button class="btn-submit" onclick="submitCar()">🚗 Objavi oglas</button>
+  </div>
+</div>
+
+<footer>
+  <p>© 2025 <span>CarSeller_MNE</span> · Berza vozila Crna Gora</p>
+  <p style="margin-top:6px;font-size:12px">Prodaj brzo. Kupi pametno.</p>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay hidden" id="loginModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-logo">CAR<span>SELLER</span>_MNE</div>
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tabLogin" onclick="switchTab('login')">Prijava</button>
+      <button class="modal-tab" id="tabRegister" onclick="switchTab('register')">Registracija</button>
+    </div>
+    <div class="modal-form" id="formLogin">
+      <label>Email adresa</label>
+      <input type="email" id="loginEmail" placeholder="vasemail@gmail.com" onkeydown="if(event.key==='Enter')doLogin()">
+      <label>Lozinka</label>
+      <input type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="btn-modal" onclick="doLogin()">Prijavi se</button>
+      <div class="modal-msg" id="loginMsg"></div>
+    </div>
+    <div class="modal-form" id="formRegister" style="display:none">
+      <label>Ime i prezime</label>
+      <input type="text" id="regName" placeholder="Vaše ime i prezime">
+      <label>Telefon</label>
+      <input type="text" id="regPhone" placeholder="+382 67 xxx xxx">
+      <label>Email adresa</label>
+      <input type="email" id="regEmail" placeholder="vasemail@gmail.com">
+      <label>Lozinka</label>
+      <input type="password" id="regPass" placeholder="minimum 6 karaktera">
+      <button class="btn-modal" onclick="doRegister()">Napravi besplatan nalog</button>
+      <div class="modal-msg" id="regMsg"></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+let currentUser = null;
+let addedPhotos = [];
+let users = [
+  { email: 'admin@carseller.me', pass: 'admin123', name: 'Marko Petrović', phone: '+382 67 000 000', isAdmin: true }
+];
+let cars = [
+  { id:1, marka:'BMW', model:'320d xDrive M-Sport', godina:2021, cijena:28500, km:64000, gorivo:'Dizel', mjenjac:'Automatik', ks:190, karoserija:'Limuzina', boja:'Alpina bijela metalizovana', reg:'04/2026', grad:'Podgorica', tablice:'PG-712-BK', opis:'Vozilo u odličnom stanju, garažirano, servisna knjiga kompletna, nikad oštećeno, jedan vlasnik od nova. Full M-sport paket, sve dostupno na uvid u ovlašćenom BMW servisu.', oprema:['M-Sport paket','Panorama krov','Navigacija Pro','Senzori 360°','LED Matrici','Digitalni kokpit','Head-Up display','Wireless punjenje','Grijana sjedišta'], prodavac:'Marko Petrović', tel:'+382 67 123 456', photo:null },
+  { id:2, marka:'Mercedes', model:'C 220d AMG Line Karavan', godina:2020, cijena:31000, km:89000, gorivo:'Dizel', mjenjac:'Automatik', ks:194, karoserija:'Karavan', boja:'Selenite siva metalizovana', reg:'09/2025', grad:'Bar', tablice:'BR-444-XZ', opis:'AMG Line paket, nije oštećen, redovni servis u ovlašćenom Mercedes servisu. Moguća zamjena za manji auto uz doplatu.', oprema:['AMG Line','Burmester audio','Panorama','Multibeam LED','Kamera za vožnju unatrag','Wireless punjenje','Head-up display','Keyless go'], prodavac:'Jovana Nikolić', tel:'+382 69 654 321', photo:null },
+  { id:3, marka:'Volkswagen', model:'Golf 8 GTI Performance', godina:2023, cijena:36500, km:18000, gorivo:'Benzin', mjenjac:'Automatik', ks:245, karoserija:'Hatchback', boja:'Tornado crvena', reg:'11/2026', grad:'Nikšić', tablice:'NK-101-GT', opis:'Potpuno nov, u garanciji do 2026. Kupljen u ovlašćenom VW zastupniku u CG. Sport paket ekstra.', oprema:['Harman Kardon','Virtual Cockpit Pro','DCC amortizeri','IQ.LIGHT LED','Parking assist+','Sjedišta Recaro','Klima 3-zone','CarPlay/Android Auto'], prodavac:'Stefan Vujović', tel:'+382 68 987 654', photo:null }
+];
+
+function toast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show' + (type ? ' '+type : '');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.className = '', 3200);
+}
+
+function carSVG(w, h) {
+  return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 140 90" fill="none"><rect x="8" y="38" width="124" height="34" rx="5" fill="#2a2a2a"/><rect x="22" y="22" width="80" height="24" rx="4" fill="#222"/><rect x="30" y="26" width="30" height="16" rx="2" fill="#1a1a1a"/><rect x="65" y="26" width="30" height="16" rx="2" fill="#1a1a1a"/><circle cx="30" cy="74" r="13" fill="#222"/><circle cx="30" cy="74" r="7" fill="#1a1a1a"/><circle cx="110" cy="74" r="13" fill="#222"/><circle cx="110" cy="74" r="7" fill="#1a1a1a"/><rect x="8" y="56" width="8" height="10" rx="1" fill="#C0392B" opacity="0.6"/><rect x="124" y="56" width="8" height="10" rx="1" fill="#C0392B" opacity="0.6"/></svg>';
+}
+
+function renderCard(c) {
+  return '<div class="car-card" onclick="showDetail('+c.id+')">'
+    +'<div class="car-img-wrap">'
+    +(c.photo ? '<img src="'+c.photo+'" alt="'+c.marka+' '+c.model+'" loading="lazy">' : '<div class="car-placeholder">'+carSVG(140,90)+'</div>')
+    +'<div class="car-gorivo-badge">'+c.gorivo.toUpperCase()+'</div>'
+    +'</div>'
+    +'<div class="car-body">'
+    +'<div class="car-make">'+c.marka+'</div>'
+    +'<div class="car-name">'+c.model+'</div>'
+    +'<div class="car-specs"><span class="spec-pill">'+c.godina+'</span><span class="spec-pill">'+c.km.toLocaleString()+' km</span><span class="spec-pill">'+c.ks+' KS</span><span class="spec-pill">'+c.mjenjac+'</span></div>'
+    +'<div class="car-price">'+c.cijena.toLocaleString()+' €</div>'
+    +'<div class="car-footer"><span class="car-location">📍 '+c.grad+'</span><button class="btn-details">Detalji</button></div>'
+    +'</div></div>';
+}
+
+function renderGrid(list, id) {
+  const g = document.getElementById(id);
+  if (!g) return;
+  g.innerHTML = list.length ? list.map(renderCard).join('') : '<p class="empty-msg">Nema oglasa koji odgovaraju filteru.</p>';
+}
+
+function showPage(p) {
+  if (p === 'add' && !currentUser) { openModal('login'); return; }
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  const navMap = {home:'navHome', listings:'navListings', add:'addCarNav'};
+  if (navMap[p]) { const el = document.getElementById(navMap[p]); if(el) el.classList.add('active'); }
+  if (p === 'home') { renderGrid(cars.slice(0,3), 'featuredGrid'); document.getElementById('heroCount').textContent = cars.length; }
+  if (p === 'listings') filterCars();
+  window.scrollTo(0, 0);
+}
+
+function filterCars() {
+  const m = document.getElementById('fMarka').value;
+  const g = document.getElementById('fGodina').value;
+  const f = document.getElementById('fGorivo').value;
+  const k = document.getElementById('fKaroserija').value;
+  const mc = parseFloat(document.getElementById('fMaxCijena').value) || Infinity;
+  const r = cars.filter(c => (!m||c.marka===m) && (!g||String(c.godina)===g) && (!f||c.gorivo===f) && (!k||c.karoserija===k) && c.cijena<=mc);
+  renderGrid(r, 'carsGrid');
+  document.getElementById('filterCount').textContent = r.length + ' vozila';
+}
+
+function showDetail(id) {
+  const c = cars.find(x => x.id === id);
+  if (!c) return;
+  const ini = c.prodavac.split(' ').map(n=>n[0]).join('').slice(0,2);
+  const clean = c.tel.replace(/[^\d+]/g,'');
+  document.getElementById('detailContent').innerHTML =
+    '<div>'
+    +'<div class="main-photo">'+(c.photo?'<img src="'+c.photo+'" alt="'+c.marka+'">':carSVG(160,100))+'</div>'
+    +'<div class="thumb-row"><div class="thumb active">'+(c.photo?'<img src="'+c.photo+'">':carSVG(40,30))+'</div><div class="thumb" style="opacity:0.3">'+carSVG(40,30)+'</div><div class="thumb" style="opacity:0.3">'+carSVG(40,30)+'</div></div>'
+    +'<div class="equipment-box"><div class="section-label">Oprema i dodaci</div><div class="equip-list">'+(c.oprema||[]).map(o=>'<span class="equip-tag">'+o+'</span>').join('')+'</div></div>'
+    +'</div>'
+    +'<div>'
+    +'<div class="detail-brand">'+c.marka+'</div>'
+    +'<div class="detail-title">'+c.model+'</div>'
+    +'<div class="detail-price">'+c.cijena.toLocaleString()+' €</div>'
+    +'<table class="spec-table">'
+    +'<tr><td>Godište</td><td>'+c.godina+'</td></tr>'
+    +'<tr><td>Kilometraža</td><td>'+c.km.toLocaleString()+' km</td></tr>'
+    +'<tr><td>Gorivo</td><td>'+c.gorivo+'</td></tr>'
+    +'<tr><td>Mjenjač</td><td>'+c.mjenjac+'</td></tr>'
+    +'<tr><td>Snaga motora</td><td>'+c.ks+' KS</td></tr>'
+    +'<tr><td>Karoserija</td><td>'+c.karoserija+'</td></tr>'
+    +'<tr><td>Boja</td><td>'+c.boja+'</td></tr>'
+    +'<tr><td>Registracija do</td><td>'+c.reg+'</td></tr>'
+    +'<tr><td>Tablice</td><td style="font-family:monospace;letter-spacing:1px">'+c.tablice+'</td></tr>'
+    +'<tr><td>Grad</td><td>'+c.grad+'</td></tr>'
+    +'</table>'
+    +'<div class="desc-box"><div class="section-label">Opis vozila</div><p>'+(c.opis||'Nema opisa.')+'</p></div>'
+    +'<div class="seller-box"><div class="seller-head">Kontakt prodavca</div>'
+    +'<div class="seller-info"><div class="seller-avatar">'+ini+'</div><div><div class="seller-name">'+c.prodavac+'</div><div class="seller-phone">'+c.tel+'</div></div></div>'
+    +'<button class="btn-call" onclick="window.location.href=\'tel:'+clean+'\'">📞 Pozovi prodavca</button>'
+    +'<button class="btn-wa" onclick="window.open(\'https://wa.me/'+clean+'\')">WhatsApp kontakt</button>'
+    +'</div></div>';
+  showPage('detail');
+}
+
+function openModal(tab) {
+  document.getElementById('loginModal').classList.remove('hidden');
+  switchTab(tab||'login');
+  ['loginMsg','regMsg'].forEach(id => { const el=document.getElementById(id); if(el){el.textContent='';el.className='modal-msg';} });
+}
+function closeModal() { document.getElementById('loginModal').classList.add('hidden'); }
+document.getElementById('loginModal').addEventListener('click', function(e){ if(e.target===this)closeModal(); });
+
+function switchTab(t) {
+  document.getElementById('tabLogin').classList.toggle('active', t==='login');
+  document.getElementById('tabRegister').classList.toggle('active', t==='register');
+  document.getElementById('formLogin').style.display = t==='login'?'block':'none';
+  document.getElementById('formRegister').style.display = t==='register'?'block':'none';
+}
+
+function setLoggedIn() {
+  document.getElementById('navAuthArea').innerHTML = '<button class="btn-nav-login" onclick="logout()" style="border-color:#444;color:#777">Odjava</button>';
+  document.getElementById('profileBar').style.display = 'flex';
+  document.getElementById('profileName').textContent = currentUser.name + (currentUser.isAdmin?' · Admin':'');
+  document.getElementById('addCarNav').style.display = 'inline';
+}
+
+function logout() {
+  currentUser = null;
+  document.getElementById('navAuthArea').innerHTML = '<button class="btn-nav-login" onclick="openModal(\'login\')">Prijavi se</button>';
+  document.getElementById('profileBar').style.display = 'none';
+  document.getElementById('addCarNav').style.display = 'none';
+  toast('Uspješno ste odjavljeni.');
+}
+
+function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('loginPass').value;
+  const msg = document.getElementById('loginMsg');
+  if (!email||!pass) { msg.textContent='Unesite email i lozinku.'; msg.className='modal-msg error'; return; }
+  const u = users.find(x=>x.email===email&&x.pass===pass);
+  if (!u) { msg.textContent='Pogrešan email ili lozinka.'; msg.className='modal-msg error'; return; }
+  currentUser = u; setLoggedIn(); closeModal();
+  toast('Dobrodošli, '+u.name.split(' ')[0]+'!', 'success');
+}
+
+function doRegister() {
+  const name = document.getElementById('regName').value.trim();
+  const phone = document.getElementById('regPhone').value.trim();
+  const email = document.getElementById('regEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('regPass').value;
+  const msg = document.getElementById('regMsg');
+  if (!name||!email||!pass) { msg.textContent='Popunite sva polja.'; msg.className='modal-msg error'; return; }
+  if (pass.length<6) { msg.textContent='Lozinka mora imati min 6 karaktera.'; msg.className='modal-msg error'; return; }
+  if (users.find(x=>x.email===email)) { msg.textContent='Email je već registrovan.'; msg.className='modal-msg error'; return; }
+  const u = {email, pass, name, phone: phone||'/', isAdmin:false};
+  users.push(u); currentUser = u; setLoggedIn(); closeModal();
+  toast('Nalog kreiran! Dobrodošli, '+name.split(' ')[0]+'!', 'success');
+}
+
+function previewPhotos(e) {
+  const prev = document.getElementById('photoPreview');
+  addedPhotos = []; prev.innerHTML = '';
+  Array.from(e.target.files).slice(0,10).forEach(f => {
+    const r = new FileReader();
+    r.onload = ev => {
+      addedPhotos.push(ev.target.result);
+      const img = document.createElement('img');
+      img.src = ev.target.result;
+      prev.appendChild(img);
+    };
+    r.readAsDataURL(f);
+  });
+}
+
+function submitCar() {
+  if (!currentUser) { openModal('login'); return; }
+  const model = document.getElementById('addModel').value.trim();
+  const cijena = parseInt(document.getElementById('addCijena').value)||0;
+  if (!model) { toast('Unesite model vozila!'); return; }
+  if (!cijena) { toast('Unesite cijenu vozila!'); return; }
+  cars.unshift({
+    id: Date.now(),
+    marka: document.getElementById('addMarka').value,
+    model,
+    godina: parseInt(document.getElementById('addGodina').value)||2022,
+    cijena,
+    km: parseInt(document.getElementById('addKm').value)||0,
+    gorivo: document.getElementById('addGorivo').value,
+    mjenjac: document.getElementById('addMjenjac').value,
+    ks: parseInt(document.getElementById('addKs').value)||0,
+    karoserija: document.getElementById('addKar').value,
+    boja: document.getElementById('addBoja').value.trim()||'Neodređena',
+    reg: document.getElementById('addReg').value.trim()||'N/A',
+    grad: document.getElementById('addGrad').value.trim()||'Podgorica',
+    tablice: document.getElementById('addTablice').value.trim()||'N/A',
+    opis: document.getElementById('addOpis').value.trim(),
+    oprema: document.getElementById('addOprema').value.trim().split(',').map(x=>x.trim()).filter(Boolean),
+    prodavac: currentUser.name,
+    tel: currentUser.phone||'+382 xx xxx xxx',
+    photo: addedPhotos[0]||null
+  });
+  toast('Oglas uspješno objavljen!', 'success');
+  ['addModel','addGodina','addCijena','addKm','addKs','addBoja','addReg','addGrad','addTablice','addOpis','addOprema'].forEach(id=>{ document.getElementById(id).value=''; });
+  document.getElementById('photoPreview').innerHTML='';
+  addedPhotos=[];
+  setTimeout(()=>showPage('listings'), 1000);
+}
+
+renderGrid(cars.slice(0,3), 'featuredGrid');
+document.getElementById('heroCount').textContent = cars.length;
+</script>
+</body>
+</html>
